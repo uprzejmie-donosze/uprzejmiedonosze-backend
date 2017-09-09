@@ -1,0 +1,3 @@
+thumb max 350px
+POST image context response = geo, uri uploaded_image, uri uploaded_thumb_image, address
+POST image plate_id response = str plate_id, str car_brand uri uploaded_image, uri thumb_image_uri, uri plate_image
