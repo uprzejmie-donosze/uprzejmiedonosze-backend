@@ -1,0 +1,145 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Uprzejmie donoszę API",
+        "description": "Api for car reporting app."
+    },
+    "paths": {
+        "/image/context" : {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "image_data",
+                        "in": "header",
+                        "description": "Image file",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data extracted from image",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "items": {
+                                        "street": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string"
+                                        },
+                                        "voivodeship": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "image/plates" :{
+            "post": {
+                "parameters": {
+                    "name": "image_data",
+                    "in": "header",
+                    "description": "Image file",
+                    "required": true,
+                    "schema": {
+                        "type": "string",
+                        "format": "byte"
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vehicle data extracted from image",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "items": {
+                                        "brand": {
+                                            "type": "string"
+                                        },
+                                        "plate_id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/report" : {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "street",
+                        "in": "header",
+                        "description": "Street address of event",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "header",
+                        "description": "City of event",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "voivodeship",
+                        "in": "header",
+                        "description": "Voivodeship of event",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "brand",
+                        "in": "header",
+                        "description": "Brand of vehicle",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "plate_id",
+                        "in": "header",
+                        "description": "Plate id of vehicle",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "incident_type",
+                        "in": "header",
+                        "description": "Plate id of vehicle",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {}
+                }
+            }
+        }
+    }
+}
