@@ -1,0 +1,111 @@
+thumb max 350px
+POST image context response = geo, uri uploaded_image, uri uploaded_thumb_image, address
+POST image plate_id response = str plate_id, str car_brand uri uploaded_image, uri thumb_image_uri, uri plate_image
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Uprzejmie donoszę API",
+        "description": "Api for car reporting app.",
+    },
+    "paths": {
+        "/image" : {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "image_data",
+                        "in": "header",
+                        "description": "Image file",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Data extracted from image",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "items": {
+                                        "street": {
+                                            "type": "string"
+                                        },
+                                        "city": {
+                                            "type": "string"
+                                        },
+                                        "voivodeship": {
+                                            "type": "string"
+                                        },
+                                        "brand": {
+                                            "type": "string"
+                                        },
+                                        "plate_id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/report" : {
+            "post": {
+                "parameters": [
+                    {
+                        "name": "street",
+                        "in": "header",
+                        "description": "Street address of event",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                        }
+                    },
+                    {
+                        "name": "city",
+                        "in": "header",
+                        "description": "City of event",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                        }
+                    },
+                    {
+                        "name": "voivodeship",
+                        "in": "header",
+                        "description": "Voivodeship of event",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                        }
+                    },
+                    {
+                        "name": "brand",
+                        "in": "header",
+                        "description": "Brand of vehicle",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                        }
+                    },
+                    {
+                        "name": "plate_id",
+                        "in": "header",
+                        "description": "Plate id of vehicle",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {}
+                }
+            }
+        }
+    }
+}
