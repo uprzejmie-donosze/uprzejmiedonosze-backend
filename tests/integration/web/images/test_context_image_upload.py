@@ -10,7 +10,7 @@ class TestContextImageUploadEndpoint:
 
     def test_image_upload_returns_response(self) -> None:
         app = webtest.TestApp(self.container('web.wsgi.app'))
-        response = app.post('http://localhost:8000/image')
+        response = app.post('http://localhost:8000/image/context')
         assert response.json == {
             'image_url': 'images/123.jpg',
             'image_thumb_url': 'images/123.jpg',
