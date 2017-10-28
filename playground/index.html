@@ -18,27 +18,29 @@
 	<body>
 		<div class="container">
 			<h1>Testing components</h1>
-			<h2>Context image</h2>
-			<div class="image-upload">
-				<label for="pic1">
-					Zrób zdjęcie prezentujące kontekst zgłoszenia<br>
-					<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
-				</label>
-				<input type="file" accept="image/jpeg" id="pic1" title="Zdjęcie 1"/>
-				<p>Image url: <span/></p><br />
-				<p>Image thumb url: <span/></p><br />
-				<p>Address: <span/></p><br />
-			</div>
-			<h2>Plate image</h2>
-			<div class="image-upload">
-				<label for="pic2">
-					Zrób zdjęcie prezentujące kontekst zgłoszenia<br>
-					<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
-				</label>
-				<input type="file" accept="image/jpeg" id="pic2" title="Zdjęcie 2"/>
-			</div>
-			<h2>Address</h2>
-			<!-- @kinga -->
+			<form>
+				<h2>Context image</h2>
+				<div class="image-upload">
+					<label for="pic1">
+						Zrób zdjęcie prezentujące kontekst zgłoszenia<br>
+						<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
+					</label>
+					<input type="file" accept="image/jpeg" id="pic1" title="Zdjęcie 1"/>
+					<p>Image url: <span /></p><br />
+					<p>Image thumb url: <span/></p><br />
+					<p>Address: <span/></p><br />
+				</div>
+				<h2>Plate image</h2>
+				<div class="image-upload">
+					<label for="pic2">
+						Zrób zdjęcie prezentujące kontekst zgłoszenia<br>
+						<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
+					</label>
+					<input type="file" accept="image/jpeg" id="pic2" title="Zdjęcie 2"/>
+				</div>
+				<h2>Address</h2>
+				<input type="text" name="address" class="js-address-autocomplete">
+			</form>
 		</div>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
@@ -155,6 +157,7 @@
 				});
 			}
 		});
-	</script>
-</body>
+		<script src='initialize-map.js'></script>
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABWMbJtldFQBKcI6se6yuwOdurPqNFBq8&libraries=places&callback=initAutocomplete" async defer></script>
+	</body>
 </html>
