@@ -26,9 +26,6 @@
 						<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
 					</label>
 					<input type="file" accept="image/jpeg" id="pic1" title="Zdjęcie 1"/>
-					<p>Image url: <span /></p><br />
-					<p>Image thumb url: <span/></p><br />
-					<p>Address: <span/></p><br />
 				</div>
 				<h2>Plate image</h2>
 				<div class="image-upload">
@@ -39,7 +36,7 @@
 					<input type="file" accept="image/jpeg" id="pic2" title="Zdjęcie 2"/>
 				</div>
 				<h2>Address</h2>
-				<input type="text" name="address" class="js-address-autocomplete">
+				<input id="address" type="text" name="address" class="js-address-autocomplete">
 			</form>
 		</div>
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
@@ -139,25 +136,27 @@
 								$('img#img' + id).attr("src", data.image_thumb_url);
 								$('#' + id + 'Url').val(data.image_url);
 								$('#' + id + 'Thumb').val(data.image_thumb_url);
+								$('#address').val(data.address);
 								} else {
 							}
 							if(id == 'pic2' && data.plate) {
-							$('#plateid').val(data.plate);
-							} else {
+								$('#plateid').val(data.plate);
+								} else {
+							}
+							if(id == 'pic2' && data.plateImage){
+								$('#imgpic2Plate').attr("src", data.plateImage);
+								}else{
+							}
+						},
+						error: function (data) {
+							$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
+							$('#' + id).textinput('enable');
 						}
-						if(id == 'pic2' && data.plateImage){
-						$('#imgpic2Plate').attr("src", data.plateImage);
-						}else{
-					}
-					},
-					error: function (data) {
-						$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
-						$('#' + id).textinput('enable');
-					}
-				});
-			}
-		});
-		<script src='initialize-map.js'></script>
+					});
+				}
+			});
+		</script>
+		<script src="initialize-map.js"></script>
 		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyABWMbJtldFQBKcI6se6yuwOdurPqNFBq8&libraries=places&callback=initAutocomplete" async defer></script>
 	</body>
 </html>
