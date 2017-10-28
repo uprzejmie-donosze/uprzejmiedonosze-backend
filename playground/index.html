@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pl">
+	<head>
+		<title>Uprzejmie donoszę dummy test page!</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+		<style>
+			.image-upload input{
+				display: none;
+			}
+			.image-upload img{
+				max-height: 350px;
+				max-width: 350px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Testing components</h1>
+			<h2>Context image</h2>
+			<div class="image-upload">
+				<label for="pic1">
+					Zrób zdjęcie prezentujące kontekst zgłoszenia<br>
+					<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
+				</label>
+				<input type="file" accept="image/jpeg" id="pic1" title="Zdjęcie 1"/>
+			</div>
+			<h2>Plate image</h2>
+			<div class="image-upload">
+				<label for="pic2">
+					Zrób zdjęcie prezentujące kontekst zgłoszenia<br>
+					<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
+				</label>
+				<input type="file" accept="image/jpeg" id="pic2" title="Zdjęcie 2"/>
+			</div>
+			<h2>Address</h2>
+			<!-- @kinga -->
+		</div>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+		<script>
+			$(document).ready(function () {
+				if (window.File && window.FileReader && window.FormData) {
+					$(document).on('change', "#pic1", function (e) {
+						checkFile(e.target.files[0], this.id);
+					});
+				}
+
+				function checkFile(file, id){
+					$('#' + id).parent().parent().removeClass('error');
+					$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/loading.gif');
+					if (file) {
+						if (/^image\//i.test(file.type)) {
+							readFile(file, id);
+							} else {
+							$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
+							$('#' + id).textinput('enable');
+						}
+					}
+				}
+
+				function readFile(file, id) {
+					var reader = new FileReader();
+
+					reader.onloadend = function () {
+						processFile(reader.result, file.type, id);
+					}
+
+					reader.onerror = function () {
+						$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
+						$('#' + id).textinput('enable');
+					}
+
+					reader.readAsDataURL(file);
+				}
+				function processFile(dataURL, fileType, id) {
+					var maxWidth = 1200, maxHeight = 1200, image = new Image();
+					image.src = dataURL;
+
+					image.onload = function () {
+						var width = image.width, height = image.height;
+						var shouldResize = (width > maxWidth) || (height > maxHeight);
+
+						if (!shouldResize) {
+							sendFile(dataURL, id);
+							return;
+						}
+
+						var newWidth, newHeight;
+
+						if (width > height) {
+							newHeight = height * (maxWidth / width);
+							newWidth = maxWidth;
+							} else {
+							newWidth = width * (maxHeight / height);
+							newHeight = maxHeight;
+						}
+
+						var canvas = document.createElement('canvas');
+
+						canvas.width = newWidth;
+						canvas.height = newHeight;
+
+						var context = canvas.getContext('2d');
+
+						context.drawImage(this, 0, 0, newWidth, newHeight);
+
+						dataURL = canvas.toDataURL(fileType);
+						sendFile(dataURL, id);
+					};
+
+					image.onerror = function () {
+						$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
+						$('#' + id).textinput('enable');
+					};
+				}
+
+				function sendFile(fileData, id) {
+					var formData = new FormData();
+
+					formData.append('image', fileData);
+					formData.append('id', id);
+
+					$.ajax({
+						type: 'POST',
+						url: 'https://staging.uprzejmiedonosze.net/api/image',
+						data: formData,
+						contentType: false,
+						processData: false,
+						success: function (data) {
+							json = $.parseJSON(data);
+							if(json.thumbUrl) {
+								$('img#img' + id).attr("src", json.thumbUrl);
+								$('#' + id).textinput('disable');
+								$('#' + id + 'Url').val(json.imageUrl);
+								$('#' + id + 'Thumb').val(json.thumbUrl);
+								} else {
+							}
+							if(id == 'pic2' && json.plate) {
+								$('#plateid').val(json.plate);
+								} else {
+							}
+							if(id == 'pic2' && json.plateImage){
+								$('#imgpic2Plate').attr("src", json.plateImage);
+								}else{
+							}
+						},
+						error: function (data) {
+							$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
+							$('#' + id).textinput('enable');
+						}
+					});
+				}
+			});
+		</script>
+	</body>
+</html>
