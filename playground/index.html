@@ -25,6 +25,9 @@
 					<img id="imgpic1" src="https://uprzejmiedonosze.net/img/camera.png"/>
 				</label>
 				<input type="file" accept="image/jpeg" id="pic1" title="Zdjęcie 1"/>
+				<p>Image url: <span/></p><br />
+				<p>Image thumb url: <span/></p><br />
+				<p>Address: <span/></p><br />
 			</div>
 			<h2>Plate image</h2>
 			<div class="image-upload">
@@ -130,30 +133,28 @@
 						contentType: false,
 						processData: false,
 						success: function (data) {
-							json = $.parseJSON(data);
-							if(json.thumbUrl) {
-								$('img#img' + id).attr("src", json.thumbUrl);
-								$('#' + id).textinput('disable');
-								$('#' + id + 'Url').val(json.imageUrl);
-								$('#' + id + 'Thumb').val(json.thumbUrl);
+							if(data.image_thumb_url) {
+								$('img#img' + id).attr("src", data.image_thumb_url);
+								$('#' + id + 'Url').val(data.image_url);
+								$('#' + id + 'Thumb').val(data.image_thumb_url);
 								} else {
 							}
-							if(id == 'pic2' && json.plate) {
-								$('#plateid').val(json.plate);
-								} else {
-							}
-							if(id == 'pic2' && json.plateImage){
-								$('#imgpic2Plate').attr("src", json.plateImage);
-								}else{
-							}
-						},
-						error: function (data) {
-							$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
-							$('#' + id).textinput('enable');
+							if(id == 'pic2' && data.plate) {
+							$('#plateid').val(data.plate);
+							} else {
 						}
-					});
-				}
-			});
-		</script>
-	</body>
+						if(id == 'pic2' && data.plateImage){
+						$('#imgpic2Plate').attr("src", data.plateImage);
+						}else{
+					}
+					},
+					error: function (data) {
+						$('img#img' + id).attr("src", 'https://uprzejmiedonosze.net/img/camera.png');
+						$('#' + id).textinput('enable');
+					}
+				});
+			}
+		});
+	</script>
+</body>
 </html>
