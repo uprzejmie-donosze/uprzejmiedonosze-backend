@@ -1,0 +1,9 @@
+version: '3'
+services:
+  wsgi-app:
+    ports:
+      - "9000:9000"
+    image: uprzejmiedonosze:latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
