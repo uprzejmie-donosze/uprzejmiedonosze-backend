@@ -3,6 +3,4 @@ falcon-auth
 gunicorn
 knot
 pymongo
-pytest
 rauth
-WebTest
