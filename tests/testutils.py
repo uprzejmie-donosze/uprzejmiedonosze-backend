@@ -6,6 +6,7 @@ from reporting.db.gateway import (
     make_new_user,
     save_user_to_db,
 )
+from reporting.db.main import db, USERS
 from reporting.main import main
 
 
@@ -22,6 +23,8 @@ class TestApp:
 
 @pytest.fixture()
 def test_user():
-    test_user =  make_new_user('test@test.com')
+    test_user =  make_new_user('test@test.com', 'test_token')
     save_user_to_db(test_user)
-    return test_user
+    yield test_user
+    db(USERS).delete_many({})
+

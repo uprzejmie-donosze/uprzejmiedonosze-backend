@@ -2,6 +2,7 @@ import falcon
 from falcon_auth import FalconAuthMiddleware, TokenAuthBackend
 
 from reporting.db.gateway import get_user_by_auth_token
+from reporting.web.users import FacebookResource, UserResource
 from reporting.web.images import ContextImageResource
 
 
@@ -29,4 +30,12 @@ def setup_routing(container):
     container('web.wsgi.app').add_route(
         '/image',
         container('web.images.resource'),
+    )
+    container('web.wsgi.app').add_route(
+        '/user',
+        UserResource(),
+    )
+    container('web.wsgi.app').add_route(
+        '/user/facebook',
+        FacebookResource(),
     )

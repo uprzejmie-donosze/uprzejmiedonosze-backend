@@ -10,20 +10,16 @@ from reporting.db.main import db, USERS
 
 
 def test_user_object_has_correct_fields():
-    user = make_new_user(email='test@test.com')
+    user = make_new_user(email='test@test.com', auth_token='test_token')
     assert 'email' in user
     assert 'auth_token' in user
 
 
 def test_new_user_is_saved_to_db():
-    new_user = make_new_user('test@test.com')
+    new_user = make_new_user('test@test.com', auth_token='test_token')
     save_user_to_db(new_user)
 
     assert db(USERS).find_one({'email': 'test@test.com'}) is not None
-
-
-def test_existing_user_is_not_duplicated_in_db_and_token_is_returned():
-    assert 0
 
 
 def test_user_found_for_good_token(test_user):
