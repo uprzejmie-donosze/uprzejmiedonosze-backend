@@ -1,0 +1,241 @@
+swagger: '2.0'
+info:
+  description: UprzejmieDonosze API
+  version: 1.0.0
+  title: UprzejmieDonosze API
+  
+  contact:
+    email: info@uprzejmiedonosze.net
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: users
+  description: Operations available to regular logged-in users
+- name: public
+  description: Operations available publicly
+
+paths:
+  /image-context:
+    post:
+      tags:
+      - users
+      summary: uploads immage
+      operationId: image-context
+      description: |
+        Upload contex image and extract geolocation data.
+      produces:
+      - application/json
+      consumes: [multipart/form-data]
+      parameters:
+      - in: formData
+        name: image_data
+        description: byte64 image data
+        required: true
+        type: file
+      responses:
+        200:
+          description: Extracted geolocation data.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Address'
+        400:
+          description: bad input parameter
+  /image-plate:
+    post:
+      tags:
+      - users
+      summary: uploads immage
+      operationId: image-plate
+      description: |
+        Upload car's plate image and extract plate id.
+      produces:
+      - application/json
+      consumes: [multipart/form-data]
+      parameters:
+      - in: formData
+        name: image_data
+        description: byte64 image data
+        required: true
+        type: file
+      responses:
+        200:
+          description: Plate id and car's brand.
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/CarInfo'
+        400:
+          description: bad input parameter
+        401:
+          description: valid user session required
+  /application:
+    get:
+      tags:
+      - users
+      summary: retrieve user's applications
+      operationId: get-applications
+      produces:
+      - application/json
+      consumes: [multipart/form-data]
+      responses:
+        200:
+          description: Applications
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Application'
+    post:
+      tags:
+      - users
+      summary: post application data
+      operationId: post application
+      description: Send application data
+      produces:
+        - application/json
+      consumes: [multipart/form-data]
+      parameters:
+      - in: formData
+        name: address
+        description: byte64 image data
+        required: true
+        type: string
+      responses:
+        200:
+          description: Plate id and car's brand.
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/CarInfo'
+        400:
+          description: bad input parameter
+        401:
+          description: valid user session required
+  /application/{id}:
+    get:
+      tags:
+      - users
+      summary: get application details
+      operationId: get-application
+      description: retrieve application details by id
+      produces:
+        - application/json
+      parameters: 
+      - in: path
+        name: id
+        description: application id
+        required: true
+        type: string
+        format: uuid
+      responses:
+        200:
+          description: application details
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Application'
+        400:
+          description: bad input parameter
+        401:
+          description: valid user session required
+        403:
+          description: user has no access to this application
+        404:
+          description: no application with this id
+          
+
+definitions:
+  Address:
+    type: object
+    required:
+    - street
+    - city
+    - voivodeship
+    properties:
+      street:
+        type: string
+        example: Sienkiewicza 7/1
+      city:
+        type: string
+        example: Warszawa
+      voivodeship:
+        type: string
+        example: Mazowieckie
+      long:
+        type: number
+      lat:
+        type: number
+  CarInfo:
+    required:
+    - plate_id
+    - brand
+    properties:
+      plate_id:
+        type: string
+        example: SZ28473X
+      brand:
+        type: string
+        example: Mazda CX3
+  UserData:
+    required:
+    - phone
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+        format: email
+      personalId:
+        type: string
+      phone:
+        type: string
+        example: 408-867-5309
+  Application:
+    required: 
+    - id
+    properties:
+      id:
+        type: string
+        format: uuid
+      status:
+        $ref: '#/definitions/ApplicationStatus'
+      date:
+        type: string
+        format: datetime
+      contextImage:
+        $ref: '#/definitions/Image'
+      plateImage:
+        $ref: '#/definitions/Image'
+      address:
+        $ref: '#/definitions/Address'
+      carInfo:
+        $ref: '#/definitions/CarInfo'
+      userComment:
+        type: string
+  ApplicationStatus:
+    required:
+    - status
+    properties:
+      status:
+        type: string
+  Image:
+    required:
+      - url
+      - thumb
+    properties:
+      url:
+        type: string
+        format: url
+      thumb:
+        type: string
+        format: url
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /szn/uprzejmiedonosze/1.0.0
+schemes:
+ - https
