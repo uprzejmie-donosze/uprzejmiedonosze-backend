@@ -19,12 +19,53 @@ tags:
 - name: public
   description: Operations available publicly
 
+parameters:
+  access_token:
+    description: OAuth access token.
+    in: query
+    name: access_token
+    type: string
+  bearer_token:
+    description: OAuth bearer token.
+    in: query
+    name: bearer_token
+    type: string
+  oauth_token:
+    description: OAuth 2.0 token for the current user.
+    in: query
+    name: oauth_token
+    type: string
+  image_data:
+    description: byte64 image data
+    in: formData
+    name: image_data
+    type: file
+    required: true
+
 paths:
-  /image-context:
+  /v1/user/application/new:
     post:
       tags:
       - users
-      summary: uploads immage
+      summary: creates new empty application
+      operationId: new-application
+      produces:
+      - application/json
+      responses:
+        200:
+          description: returns id of new application
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Application'
+        401:
+          description: valid user session required
+  
+  /v1/user/image-context:
+    post:
+      tags:
+      - users
+      summary: uploads image
       operationId: image-context
       description: |
         Upload contex image and extract geolocation data.
@@ -32,25 +73,24 @@ paths:
       - application/json
       consumes: [multipart/form-data]
       parameters:
-      - in: formData
-        name: image_data
-        description: byte64 image data
-        required: true
-        type: file
+      - $ref: '#/parameters/image_data'
       responses:
         200:
           description: Extracted geolocation data.
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/Address'
         400:
           description: bad input parameter
-  /image-plate:
+        401:
+          description: valid user session required
+
+  /v1/user/image-plate:
     post:
       tags:
       - users
-      summary: uploads immage
+      summary: uploads image
       operationId: image-plate
       description: |
         Upload car's plate image and extract plate id.
@@ -58,11 +98,7 @@ paths:
       - application/json
       consumes: [multipart/form-data]
       parameters:
-      - in: formData
-        name: image_data
-        description: byte64 image data
-        required: true
-        type: file
+      - $ref: '#/parameters/image_data'
       responses:
         200:
           description: Plate id and car's brand.
@@ -74,7 +110,8 @@ paths:
           description: bad input parameter
         401:
           description: valid user session required
-  /application:
+
+  /v1/user/application:
     get:
       tags:
       - users
@@ -90,33 +127,31 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Application'
+        401:
+          description: valid user session required
     post:
       tags:
       - users
       summary: post application data
-      operationId: post application
+      operationId: post-application
       description: Send application data
       produces:
         - application/json
       consumes: [multipart/form-data]
       parameters:
-      - in: formData
-        name: address
-        description: byte64 image data
-        required: true
-        type: string
+      - in: body
+        name: application
+        schema:
+          $ref: '#/definitions/Application'
       responses:
         200:
-          description: Plate id and car's brand.
-          schema:
-            type: object
-            items:
-              $ref: '#/definitions/CarInfo'
+          description: Application created
         400:
           description: bad input parameter
         401:
           description: valid user session required
-  /application/{id}:
+
+  /v1/user/application/{id}:
     get:
       tags:
       - users
@@ -147,7 +182,6 @@ paths:
           description: user has no access to this application
         404:
           description: no application with this id
-          
 
 definitions:
   Address:
@@ -183,7 +217,9 @@ definitions:
         example: Mazda CX3
   UserData:
     required:
-    - phone
+    - name
+    - email
+    - personalId
     properties:
       name:
         type: string
@@ -223,6 +259,14 @@ definitions:
     properties:
       status:
         type: string
+        enum:
+          - draft
+          - ready
+          - printed
+          - failed
+          - success
+          - unknown
+          - deleted
   Image:
     required:
       - url
@@ -234,6 +278,8 @@ definitions:
       thumb:
         type: string
         format: url
+    type: string
+
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /szn/uprzejmiedonosze/1.0.0
