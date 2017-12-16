@@ -202,8 +202,10 @@ definitions:
         example: Mazowieckie
       long:
         type: number
+        example: 52
       lat:
         type: number
+        example: 30
   CarInfo:
     required:
     - plate_id
@@ -215,6 +217,10 @@ definitions:
       brand:
         type: string
         example: Mazda CX3
+      plateImage:
+        type: string
+        format: url
+        example: https://uprzejmiedonosze.net/cdn/5996f0cf6ea54-p.jpg
   UserData:
     required:
     - name
@@ -223,14 +229,17 @@ definitions:
     properties:
       name:
         type: string
+        example: Jan Kowalski
       email:
         type: string
         format: email
+        example: jan@kowalski.pl
       personalId:
         type: string
+        example: DHD238747
       phone:
         type: string
-        example: 408-867-5309
+        example: 123123123
   Application:
     required: 
     - id
@@ -238,11 +247,13 @@ definitions:
       id:
         type: string
         format: uuid
+        example: E36A7C2B-56F2-43A9-A482-219946FFEF87
       status:
         $ref: '#/definitions/ApplicationStatus'
       date:
         type: string
         format: datetime
+        example: 2017-12-23T18:25:43.511Z
       contextImage:
         $ref: '#/definitions/Image'
       plateImage:
@@ -253,6 +264,7 @@ definitions:
         $ref: '#/definitions/CarInfo'
       userComment:
         type: string
+        example: Stoi codziennie
   ApplicationStatus:
     required:
     - status
@@ -267,6 +279,7 @@ definitions:
           - success
           - unknown
           - deleted
+        example: draft
   Image:
     required:
       - url
@@ -275,10 +288,11 @@ definitions:
       url:
         type: string
         format: url
+        example: https://uprzejmiedonosze.net/cdn/5996f0cf6ea54.jpg
       thumb:
         type: string
         format: url
-    type: string
+        example: https://uprzejmiedonosze.net/cdn/5996f0cf6ea54-t.jpg
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
