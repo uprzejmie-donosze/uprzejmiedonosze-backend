@@ -1,11 +1,29 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Uprzejmie donoszę API",
-        "description": "Api for car reporting app."
+        "title": "Uprzejmiedonosze API",
+        "description": "Api for car reporting app.",
+        "version": "0.0.1"
+    },
+    "components": {
+        "schemas": {
+            "ImageContext": {
+                "properties": {
+                    "street": {
+                        "type": "string"
+                    },
+                    "city": {
+                        "type": "string"
+                    },
+                    "voivodeship": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
     },
     "paths": {
-        "/image/context" : {
+        "/image/context": {
             "post": {
                 "parameters": [
                     {
@@ -25,18 +43,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "type": "object",
-                                    "items": {
-                                        "street": {
-                                            "type": "string"
-                                        },
-                                        "city": {
-                                            "type": "string"
-                                        },
-                                        "voivodeship": {
-                                            "type": "string"
-                                        }
-                                    }
+                                    "$ref": "#/components/schemas/ImageContext"
                                 }
                             }
                         }
@@ -44,18 +51,20 @@
                 }
             }
         },
-        "image/details" :{
+        "/image/details": {
             "post": {
-                "parameters": {
-                    "name": "image_data",
-                    "in": "header",
-                    "description": "Image file",
-                    "required": true,
-                    "schema": {
-                        "type": "string",
-                        "format": "byte"
+                "parameters": [
+                    {
+                        "name": "image_data",
+                        "in": "header",
+                        "description": "Image file",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "byte"
+                        }
                     }
-                },
+                ],
                 "responses": {
                     "200": {
                         "description": "Vehicle data extracted from image",
@@ -64,11 +73,13 @@
                                 "schema": {
                                     "type": "object",
                                     "items": {
-                                        "brand": {
-                                            "type": "string"
-                                        },
-                                        "plate_id": {
-                                            "type": "string"
+                                        "properties": {
+                                            "brand": {
+                                                "type": "string"
+                                            },
+                                            "plate_id": {
+                                                "type": "string"
+                                            }
                                         }
                                     }
                                 }
@@ -78,7 +89,7 @@
                 }
             }
         },
-        "/report" : {
+        "/report": {
             "post": {
                 "parameters": [
                     {
@@ -137,7 +148,9 @@
                     }
                 ],
                 "responses": {
-                    "204": {}
+                    "204": {
+                        "description": "Report accepted"
+                    }
                 }
             }
         }
