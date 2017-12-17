@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: UprzejmieDonosze API
-  version: "1.0.3"
+  version: "1.0.4"
   title: UprzejmieDonosze API
   
   contact:
@@ -57,14 +57,14 @@ paths:
           schema:
             $ref: '#/definitions/Application'
         401:
-          description: valid user session required
+          $ref: "#/responses/Unauthorized"
   
-  /v1/user/image-context:
+  /v1/user/application/{id}/add-context-image:
     post:
       tags:
       - users
-      summary: uploads image
-      operationId: image-context
+      summary: Uploads context image
+      operationId: add-context-image
       description: |
         Upload contex image and extract geolocation data.
       produces:
@@ -72,6 +72,12 @@ paths:
       consumes:
       - multipart/form-data
       parameters:
+      - in: path
+        name: id
+        description: application id
+        required: true
+        type: string
+        format: uuid
       - $ref: '#/parameters/image_data'
       responses:
         200:
@@ -82,13 +88,17 @@ paths:
           $ref: "#/responses/BadParameter"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/NoAccess"
+        404:
+          $ref: "#/responses/NotFound"
 
-  /v1/user/image-plate:
+  /v1/user/application/{id}/add-car-image:
     post:
       tags:
       - users
-      summary: uploads image
-      operationId: image-plate
+      summary: Uploads car image
+      operationId: add-car-image
       description: |
         Upload car's plate image and extract plate id.
       produces:
@@ -96,6 +106,12 @@ paths:
       consumes:
       - multipart/form-data
       parameters:
+      - in: path
+        name: id
+        description: application id
+        required: true
+        type: string
+        format: uuid
       - $ref: '#/parameters/image_data'
       responses:
         200:
@@ -106,16 +122,21 @@ paths:
           $ref: "#/responses/BadParameter"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/NoAccess"
+        404:
+          $ref: "#/responses/NotFound"
 
-  /v1/user/application:
+  /v1/user/applications:
     get:
       tags:
       - users
-      summary: retrieve user's applications
+      summary: Retrieve user's applications
       operationId: get-applications
       produces:
       - application/json
-      consumes: [multipart/form-data]
+      consumes:
+      - multipart/form-data
       responses:
         200:
           description: Applications
@@ -125,16 +146,54 @@ paths:
               $ref: '#/definitions/Application'
         401:
           $ref: "#/responses/Unauthorized"
-    post:
+
+  /v1/user/applications/print:
+    get:
       tags:
       - users
-      summary: post application data
-      operationId: post-application
-      description: Send application data
+      summary: Get all not-printed applications as a single PDFs
+      operationId: get-applications
+      description: |
+        Get all not-printed applications (in ready state),
+        change status printed and send back single PDF
+        with applications.
       produces:
-        - application/json
-      consumes: [multipart/form-data]
+      - application/pdf
+      consumes:
+      - multipart/form-data
+      responses:
+        200:
+          description: all non printed applications in PDF
+          schema:
+            type: file
+        400:
+          $ref: "#/responses/BadParameter"
+        401:
+          $ref: "#/responses/Unauthorized"
+        404:
+          $ref: "#/responses/NotFound"
+
+  
+  /v1/user/application/{id}:
+    put:
+      tags:
+      - users
+      summary: Put application data 
+      operationId: put-application
+      description: |
+        Send application data. Application has to be created
+        using 'new' endpoint before.
+      produces:
+      - application/json
+      consumes:
+      - multipart/form-data
       parameters:
+      - in: path
+        name: id
+        description: application id
+        required: true
+        type: string
+        format: uuid
       - in: body
         name: application
         schema:
@@ -146,12 +205,16 @@ paths:
           $ref: "#/responses/BadParameter"
         401:
           $ref: "#/responses/Unauthorized"
+        403:
+          $ref: "#/responses/NoAccess"
+        404:
+          $ref: "#/responses/NotFound"
 
   /v1/user/application/{id}/pdf:
     get:
       tags:
       - users
-      summary: get application printer friendly form
+      summary: Gets application in a printer friendly form
       operationId: get-application-pdf
       description: retrieve application's PDF details by id
       produces:
@@ -173,12 +236,12 @@ paths:
         401:
           $ref: "#/responses/Unauthorized"
         403:
-          description: user has no access to this application
+          $ref: "#/responses/NoAccess"
         404:
           $ref: "#/responses/NotFound"
   
   /v1/user/application/{id}/set/{status}:
-    post:
+    put:
       tags:
       - users
       summary: Change application status
@@ -339,6 +402,10 @@ responses:
     description: Unauthorized
     schema:
       $ref: "#/definitions/Error"
+  NoAccess:
+    description: No access to this element
+    schema:
+      $ref: "#/definitions/Error"
   BadParameter:
     description: invalid input parameters
     schema:
@@ -346,6 +413,6 @@ responses:
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
-basePath: /
+basePath: /szn/uprzejmiedonosze/1.0.4
 schemes:
  - https
