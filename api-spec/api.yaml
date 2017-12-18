@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: UprzejmieDonosze API
-  version: "1.0.4"
+  version: "1.0.5"
   title: UprzejmieDonosze API
   
   contact:
@@ -152,7 +152,7 @@ paths:
       tags:
       - users
       summary: Get all not-printed applications as a single PDFs
-      operationId: get-applications
+      operationId: get-applications-as-pdf
       description: |
         Get all not-printed applications (in ready state),
         change status printed and send back single PDF
@@ -257,7 +257,7 @@ paths:
         name: status
         type: string
         required: true
-        enum: &STATUS
+        enum: [draft, ready, printed, failed, success, unknown, deleted]
       responses:
         200:
           description: application details
@@ -360,14 +360,7 @@ definitions:
     properties:
       status:
         type: string
-        enum: &STATUS
-          - draft
-          - ready
-          - printed
-          - failed
-          - success
-          - unknown
-          - deleted
+        enum: [draft, ready, printed, failed, success, unknown, deleted]
         example: draft
   Image:
     required:
@@ -413,6 +406,6 @@ responses:
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
-basePath: /szn/uprzejmiedonosze/1.0.4
+basePath: /szn/uprzejmiedonosze/1.0.5
 schemes:
  - https
