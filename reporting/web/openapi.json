@@ -1,158 +1,490 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "title": "Uprzejmiedonosze API",
-        "description": "Api for car reporting app.",
-        "version": "0.0.1"
+    "swagger" : "2.0",
+    "info" : {
+      "description" : "UprzejmieDonosze API",
+      "version" : "1.0.5",
+      "title" : "UprzejmieDonosze API",
+      "contact" : {
+        "email" : "info@uprzejmiedonosze.net"
+      },
+      "license" : {
+        "name" : "Apache 2.0",
+        "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
     },
-    "components": {
-        "schemas": {
-            "ImageContext": {
-                "properties": {
-                    "street": {
-                        "type": "string"
-                    },
-                    "city": {
-                        "type": "string"
-                    },
-                    "voivodeship": {
-                        "type": "string"
-                    }
-                }
-            }
-        }
+    "tags" : [ {
+      "name" : "admins",
+      "description" : "Secured Admin-only calls"
+    }, {
+      "name" : "users",
+      "description" : "Operations available to regular logged-in users"
+    }, {
+      "name" : "public",
+      "description" : "Operations available publicly"
+    } ],
+    "parameters" : {
+      "access_token" : {
+        "description" : "OAuth access token.",
+        "in" : "query",
+        "name" : "access_token",
+        "type" : "string"
+      },
+      "bearer_token" : {
+        "description" : "OAuth bearer token.",
+        "in" : "query",
+        "name" : "bearer_token",
+        "type" : "string"
+      },
+      "oauth_token" : {
+        "description" : "OAuth 2.0 token for the current user.",
+        "in" : "query",
+        "name" : "oauth_token",
+        "type" : "string"
+      },
+      "image_data" : {
+        "description" : "byte64 image data",
+        "in" : "formData",
+        "name" : "image_data",
+        "type" : "file",
+        "required" : true
+      }
     },
-    "paths": {
-        "/image/context": {
-            "post": {
-                "parameters": [
-                    {
-                        "name": "image_data",
-                        "in": "header",
-                        "description": "Image file",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "byte"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Data extracted from image",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ImageContext"
-                                }
-                            }
-                        }
-                    }
-                }
+    "paths" : {
+      "/v1/user/application/new" : {
+        "post" : {
+          "tags" : [ "users" ],
+          "summary" : "creates new empty application",
+          "operationId" : "new-application",
+          "produces" : [ "application/json" ],
+          "responses" : {
+            "200" : {
+              "description" : "returns id of new application",
+              "schema" : {
+                "$ref" : "#/definitions/Application"
+              }
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
             }
-        },
-        "/image/details": {
-            "post": {
-                "parameters": [
-                    {
-                        "name": "image_data",
-                        "in": "header",
-                        "description": "Image file",
-                        "required": true,
-                        "schema": {
-                            "type": "string",
-                            "format": "byte"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Vehicle data extracted from image",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "items": {
-                                        "properties": {
-                                            "brand": {
-                                                "type": "string"
-                                            },
-                                            "plate_id": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/report": {
-            "post": {
-                "parameters": [
-                    {
-                        "name": "street",
-                        "in": "header",
-                        "description": "Street address of event",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "city",
-                        "in": "header",
-                        "description": "City of event",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "voivodeship",
-                        "in": "header",
-                        "description": "Voivodeship of event",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "brand",
-                        "in": "header",
-                        "description": "Brand of vehicle",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "plate_id",
-                        "in": "header",
-                        "description": "Plate id of vehicle",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "incident_type",
-                        "in": "header",
-                        "description": "Plate id of vehicle",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Report accepted"
-                    }
-                }
-            }
+          }
         }
-    }
-}
+      },
+      "/v1/user/application/{id}/add-context-image" : {
+        "post" : {
+          "tags" : [ "users" ],
+          "summary" : "Uploads context image",
+          "operationId" : "add-context-image",
+          "description" : "Upload contex image and extract geolocation data.\n",
+          "produces" : [ "application/json" ],
+          "consumes" : [ "multipart/form-data" ],
+          "parameters" : [ {
+            "in" : "path",
+            "name" : "id",
+            "description" : "application id",
+            "required" : true,
+            "type" : "string",
+            "format" : "uuid"
+          }, {
+            "$ref" : "#/parameters/image_data"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Extracted geolocation data.",
+              "schema" : {
+                "$ref" : "#/definitions/Address"
+              }
+            },
+            "400" : {
+              "$ref" : "#/responses/BadParameter"
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            },
+            "403" : {
+              "$ref" : "#/responses/NoAccess"
+            },
+            "404" : {
+              "$ref" : "#/responses/NotFound"
+            }
+          }
+        }
+      },
+      "/v1/user/application/{id}/add-car-image" : {
+        "post" : {
+          "tags" : [ "users" ],
+          "summary" : "Uploads car image",
+          "operationId" : "add-car-image",
+          "description" : "Upload car's plate image and extract plate id.\n",
+          "produces" : [ "application/json" ],
+          "consumes" : [ "multipart/form-data" ],
+          "parameters" : [ {
+            "in" : "path",
+            "name" : "id",
+            "description" : "application id",
+            "required" : true,
+            "type" : "string",
+            "format" : "uuid"
+          }, {
+            "$ref" : "#/parameters/image_data"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Extracted car details",
+              "schema" : {
+                "$ref" : "#/definitions/CarInfo"
+              }
+            },
+            "400" : {
+              "$ref" : "#/responses/BadParameter"
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            },
+            "403" : {
+              "$ref" : "#/responses/NoAccess"
+            },
+            "404" : {
+              "$ref" : "#/responses/NotFound"
+            }
+          }
+        }
+      },
+      "/v1/user/applications" : {
+        "get" : {
+          "tags" : [ "users" ],
+          "summary" : "Retrieve user's applications",
+          "operationId" : "get-applications",
+          "produces" : [ "application/json" ],
+          "consumes" : [ "multipart/form-data" ],
+          "responses" : {
+            "200" : {
+              "description" : "Applications",
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/definitions/Application"
+                }
+              }
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            }
+          }
+        }
+      },
+      "/v1/user/applications/print" : {
+        "get" : {
+          "tags" : [ "users" ],
+          "summary" : "Get all not-printed applications as a single PDFs",
+          "operationId" : "get-applications-as-pdf",
+          "description" : "Get all not-printed applications (in ready state),\nchange status printed and send back single PDF\nwith applications.\n",
+          "produces" : [ "application/pdf" ],
+          "consumes" : [ "multipart/form-data" ],
+          "responses" : {
+            "200" : {
+              "description" : "all non printed applications in PDF",
+              "schema" : {
+                "type" : "file"
+              }
+            },
+            "400" : {
+              "$ref" : "#/responses/BadParameter"
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            },
+            "404" : {
+              "$ref" : "#/responses/NotFound"
+            }
+          }
+        }
+      },
+      "/v1/user/application/{id}" : {
+        "put" : {
+          "tags" : [ "users" ],
+          "summary" : "Put application data",
+          "operationId" : "put-application",
+          "description" : "Send application data. Application has to be created\nusing 'new' endpoint before.\n",
+          "produces" : [ "application/json" ],
+          "consumes" : [ "multipart/form-data" ],
+          "parameters" : [ {
+            "in" : "path",
+            "name" : "id",
+            "description" : "application id",
+            "required" : true,
+            "type" : "string",
+            "format" : "uuid"
+          }, {
+            "in" : "body",
+            "name" : "application",
+            "schema" : {
+              "$ref" : "#/definitions/Application"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Application created"
+            },
+            "400" : {
+              "$ref" : "#/responses/BadParameter"
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            },
+            "403" : {
+              "$ref" : "#/responses/NoAccess"
+            },
+            "404" : {
+              "$ref" : "#/responses/NotFound"
+            }
+          }
+        }
+      },
+      "/v1/user/application/{id}/pdf" : {
+        "get" : {
+          "tags" : [ "users" ],
+          "summary" : "Gets application in a printer friendly form",
+          "operationId" : "get-application-pdf",
+          "description" : "retrieve application's PDF details by id",
+          "produces" : [ "application/pdf" ],
+          "parameters" : [ {
+            "in" : "path",
+            "name" : "id",
+            "description" : "application id",
+            "required" : true,
+            "type" : "string",
+            "format" : "uuid"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "application details",
+              "schema" : {
+                "type" : "file"
+              }
+            },
+            "400" : {
+              "$ref" : "#/responses/BadParameter"
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            },
+            "403" : {
+              "$ref" : "#/responses/NoAccess"
+            },
+            "404" : {
+              "$ref" : "#/responses/NotFound"
+            }
+          }
+        }
+      },
+      "/v1/user/application/{id}/set/{status}" : {
+        "put" : {
+          "tags" : [ "users" ],
+          "summary" : "Change application status",
+          "operationId" : "change-application-status",
+          "parameters" : [ {
+            "in" : "path",
+            "name" : "id",
+            "description" : "application id",
+            "required" : true,
+            "type" : "string",
+            "format" : "uuid"
+          }, {
+            "in" : "path",
+            "name" : "status",
+            "type" : "string",
+            "required" : true,
+            "enum" : [ "draft", "ready", "printed", "failed", "success", "unknown", "deleted" ]
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "application details",
+              "schema" : {
+                "type" : "file"
+              }
+            },
+            "400" : {
+              "$ref" : "#/responses/BadParameter"
+            },
+            "401" : {
+              "$ref" : "#/responses/Unauthorized"
+            },
+            "403" : {
+              "description" : "user has no access to this application"
+            },
+            "404" : {
+              "$ref" : "#/responses/NotFound"
+            }
+          }
+        }
+      }
+    },
+    "definitions" : {
+      "Address" : {
+        "type" : "object",
+        "required" : [ "street", "city", "voivodeship" ],
+        "properties" : {
+          "street" : {
+            "type" : "string",
+            "example" : "Sienkiewicza 7/1"
+          },
+          "city" : {
+            "type" : "string",
+            "example" : "Warszawa"
+          },
+          "voivodeship" : {
+            "type" : "string",
+            "example" : "Mazowieckie"
+          },
+          "long" : {
+            "type" : "number",
+            "example" : 52.233463
+          },
+          "lat" : {
+            "type" : "number",
+            "example" : 21.014337
+          }
+        }
+      },
+      "CarInfo" : {
+        "required" : [ "plate_id", "brand" ],
+        "properties" : {
+          "plate_id" : {
+            "type" : "string",
+            "example" : "SZ28473X"
+          },
+          "brand" : {
+            "type" : "string",
+            "example" : "Mazda CX3"
+          },
+          "plateImage" : {
+            "type" : "string",
+            "format" : "url",
+            "example" : "https://uprzejmiedonosze.net/cdn/5996f0cf6ea54-p.jpg"
+          }
+        }
+      },
+      "UserData" : {
+        "required" : [ "name", "email", "personalId" ],
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "example" : "Jan Kowalski"
+          },
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "example" : "jan@kowalski.pl"
+          },
+          "personalId" : {
+            "type" : "string",
+            "example" : "DHD238747"
+          },
+          "phone" : {
+            "type" : "string",
+            "example" : 123123123
+          }
+        }
+      },
+      "Application" : {
+        "required" : [ "id" ],
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "e181a8eb-89e2-4638-8ee6-f353fef47829"
+          },
+          "status" : {
+            "$ref" : "#/definitions/ApplicationStatus"
+          },
+          "date" : {
+            "type" : "string",
+            "format" : "datetime",
+            "example" : "2017-12-23T18:25:43.511Z"
+          },
+          "contextImage" : {
+            "$ref" : "#/definitions/Image"
+          },
+          "plateImage" : {
+            "$ref" : "#/definitions/Image"
+          },
+          "address" : {
+            "$ref" : "#/definitions/Address"
+          },
+          "carInfo" : {
+            "$ref" : "#/definitions/CarInfo"
+          },
+          "userComment" : {
+            "type" : "string",
+            "example" : "Stoi codziennie"
+          }
+        }
+      },
+      "ApplicationStatus" : {
+        "required" : [ "status" ],
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "draft", "ready", "printed", "failed", "success", "unknown", "deleted" ],
+            "example" : "draft"
+          }
+        }
+      },
+      "Image" : {
+        "required" : [ "url", "thumb" ],
+        "properties" : {
+          "url" : {
+            "type" : "string",
+            "format" : "url",
+            "example" : "https://uprzejmiedonosze.net/cdn/5996f0cf6ea54.jpg"
+          },
+          "thumb" : {
+            "type" : "string",
+            "format" : "url",
+            "example" : "https://uprzejmiedonosze.net/cdn/5996f0cf6ea54-t.jpg"
+          }
+        }
+      },
+      "Error" : {
+        "type" : "object",
+        "required" : [ "code", "message" ],
+        "properties" : {
+          "code" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "responses" : {
+      "NotFound" : {
+        "description" : "The specified resource was not found",
+        "schema" : {
+          "$ref" : "#/definitions/Error"
+        }
+      },
+      "Unauthorized" : {
+        "description" : "Unauthorized",
+        "schema" : {
+          "$ref" : "#/definitions/Error"
+        }
+      },
+      "NoAccess" : {
+        "description" : "No access to this element",
+        "schema" : {
+          "$ref" : "#/definitions/Error"
+        }
+      },
+      "BadParameter" : {
+        "description" : "invalid input parameters",
+        "schema" : {
+          "$ref" : "#/definitions/Error"
+        }
+      }
+    },
+    "host" : "virtserver.swaggerhub.com",
+    "basePath" : "/szn/uprzejmiedonosze/1.0.5",
+    "schemes" : [ "https" ]
+  }
