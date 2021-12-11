@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   description: UprzejmieDonosze API
-  version: "1.0.5"
+  version: "1.0.6"
   title: UprzejmieDonosze API
   
   contact:
@@ -83,7 +83,7 @@ paths:
         200:
           description: Extracted geolocation data.
           schema:
-            $ref: '#/definitions/Address'
+            $ref: '#/definitions/ContextImage'
         400:
           $ref: "#/responses/BadParameter"
         401:
@@ -117,7 +117,7 @@ paths:
         200:
           description: Extracted car details
           schema:
-            $ref: '#/definitions/CarInfo'
+            $ref: '#/definitions/CarImage'
         400:
           $ref: "#/responses/BadParameter"
         401:
@@ -297,10 +297,10 @@ definitions:
         example: 21.014337
   CarInfo:
     required:
-    - plate_id
+    - plateId
     - brand
     properties:
-      plate_id:
+      plateId:
         type: string
         example: SZ28473X
       brand:
@@ -329,6 +329,8 @@ definitions:
       phone:
         type: string
         example: 123123123
+      address:
+        $ref: '#/definitions/Address'
   Application:
     required: 
     - id
@@ -337,6 +339,9 @@ definitions:
         type: string
         format: uuid
         example: e181a8eb-89e2-4638-8ee6-f353fef47829
+      number:
+        type: string
+        example: 2/12E
       status:
         $ref: '#/definitions/ApplicationStatus'
       date:
@@ -345,7 +350,7 @@ definitions:
         example: 2017-12-23T18:25:43.511Z
       contextImage:
         $ref: '#/definitions/Image'
-      plateImage:
+      carImage:
         $ref: '#/definitions/Image'
       address:
         $ref: '#/definitions/Address'
@@ -375,6 +380,24 @@ definitions:
         type: string
         format: url
         example: https://uprzejmiedonosze.net/cdn/5996f0cf6ea54-t.jpg
+  CarImage:
+    required:
+    - carImage
+    - carInfo
+    properties:
+      carInfo:
+        $ref: '#/definitions/CarInfo'
+      carImage:
+        $ref: '#/definitions/Image'
+  ContextImage:
+    required:
+    - contextImage
+    - address
+    properties:
+      address:
+        $ref: '#/definitions/Address'
+      contextImage:
+        $ref: '#/definitions/Image'
   Error:
     type: object
     required:
@@ -406,6 +429,6 @@ responses:
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
-basePath: /szn/uprzejmiedonosze/1.0.5
+basePath: /szn/uprzejmiedonosze/1.0.6
 schemes:
  - https
